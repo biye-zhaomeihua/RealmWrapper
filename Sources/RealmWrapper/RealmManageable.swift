@@ -16,6 +16,7 @@ public protocol RealmManageable {
     var isUseInMemory: Bool { get }
     var readOnly: Bool { get }
     var schemaVersion: UInt64 { get }
+    var fileDirectory: URL? { get }
     var fileName: String { get }
     var appGroupIdentifier: String? { get }
     var encryptionKey: Data? { get }
@@ -93,7 +94,24 @@ public extension RealmManageable {
             if let appGroupIdentifier = appGroupIdentifier {
                 config.fileURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)?.appendingPathComponent(file)
             } else {
-                config.fileURL = URL(fileURLWithPath: RLMRealmPathForFile(file))
+                var isExists = false
+                if let fileDirectory = fileDirectory {
+                    if FileManager.default.fileExists(atPath: fileDirectory.path) {
+                        isExists = true
+                    } else {
+                        do {
+                            try FileManager.default.createDirectory(atPath: fileDirectory.path, withIntermediateDirectories: false, attributes: nil)
+                            isExists = true
+                        } catch _ as NSError {
+                            ///
+                        }
+                    }
+                }
+                if isExists {
+                    config.fileURL = fileDirectory!.appendingPathComponent(file)
+                } else {
+                    config.fileURL = URL(fileURLWithPath: RLMRealmPathForFile(file))
+                }
             }
             config.objectTypes = objectTypes
         }
