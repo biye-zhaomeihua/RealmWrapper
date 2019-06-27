@@ -48,6 +48,9 @@ public extension RealmManageable {
     var readOnly: Bool {
         return false
     }
+    var fileDirectory: URL? {
+        return nil
+    }
     var appGroupIdentifier: String? {
         return nil
     }
@@ -100,7 +103,7 @@ public extension RealmManageable {
                         isExists = true
                     } else {
                         do {
-                            try FileManager.default.createDirectory(atPath: fileDirectory.path, withIntermediateDirectories: false, attributes: nil)
+                            try FileManager.default.createDirectory(atPath: fileDirectory.path, withIntermediateDirectories: true, attributes: nil)
                             isExists = true
                         } catch _ as NSError {
                             ///
