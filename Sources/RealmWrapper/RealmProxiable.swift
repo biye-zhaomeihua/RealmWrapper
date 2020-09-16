@@ -24,12 +24,9 @@ public extension RealmProxiable {
         return RealmQuery(results: results)
     }
     
-    func query<T: Object>(_ type: T.Type = T.self, filter: NSPredicate? = nil, sortProperty: String? = nil, ordering: OrderingType = .ascending) -> RealmQuery<T> {
+    func query<T: Object>(_ type: T.Type = T.self, filter: NSPredicate, sortProperty: String? = nil, ordering: OrderingType = .ascending) -> RealmQuery<T> {
         let realm = try! Realm(configuration: rm.createConfiguration())
-        var results = realm.objects(type)
-        if let filter = filter {
-            results = results.filter(filter)
-        }
+        var results = realm.objects(type).filter(filter)
         if let sortProperty = sortProperty {
             results = results.sorted(byKeyPath: sortProperty, ascending: ordering == .ascending)
         }
